@@ -372,6 +372,8 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 016b65c45803e1141b56b18383936b4f, type: 2}
   unitName: 
   currentAgility: 0
+  currentSanity: 0
+  maxSanity: 0
   plannedActions: 
 --- !u!4 &788542596
 Transform:
@@ -399,6 +401,7 @@ GameObject:
   - component: {fileID: 1364301472}
   - component: {fileID: 1364301471}
   - component: {fileID: 1364301473}
+  - component: {fileID: 1364301474}
   m_Layer: 0
   m_Name: _GameManager
   m_TagString: Untagged
@@ -422,6 +425,7 @@ MonoBehaviour:
   testUnits:
   - {fileID: 1675473656}
   - {fileID: 788542595}
+  deckManager: {fileID: 1364301474}
 --- !u!4 &1364301472
 Transform:
   m_ObjectHideFlags: 0
@@ -452,6 +456,23 @@ MonoBehaviour:
   allUnits:
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &1364301474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364301470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff58d30c9615c3459654a932d4ae864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Managers::Game.Managers.DeckManager
+  allDeck:
+  - {fileID: 11400000, guid: 8c424d3f7510ac040a0ba4710d3fb1a3, type: 2}
+  - {fileID: 11400000, guid: 8c424d3f7510ac040a0ba4710d3fb1a3, type: 2}
+  - {fileID: 11400000, guid: 8c424d3f7510ac040a0ba4710d3fb1a3, type: 2}
+  currentHand: []
 --- !u!1 &1675473655
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,6 +505,8 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: f3d8c962993389747a17308ef990b603, type: 2}
   unitName: 
   currentAgility: 0
+  currentSanity: 0
+  maxSanity: 0
   plannedActions: 
 --- !u!4 &1675473657
 Transform:

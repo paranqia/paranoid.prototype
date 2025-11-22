@@ -2,82 +2,45 @@ using UnityEngine;
 using System.Collections.Generic;
 using Game.Core;
 using Game.Gameplay;
-using Game.Managers;
+using Game.Managers.States;
 
-namespace GameManagers
+namespace Game.Managers
 {
     public class BattleManager : MonoBehaviour
     {
-        public GameState CurrentState { get; private set; }
+        public BattleState CurrentState { get; private set; }
 
-        [Header("Referances")]
-        [SerializeField] private TurnManager turnManager;
-        [SerializeField] private List<Unit> testUnits;
-        [SerializeField] private DeckManager deckManager;
+        [Header("References")]
+        public TurnManager turnManager; // Keep for now, might replace with TimelineManager later
+        public List<Unit> Units; // Renamed from testUnits
+        public DeckManager deckManager;
 
         private void Start()
         {
-            ChangeState(GameState.BattleStart);
+            // Start with Setup State
+            ChangeState(new SetupState(this));
         }
 
         private void Update()
         {
-            if (CurrentState == GameState.PlanningPhase)
+            if (CurrentState != null)
             {
-                if(Input.GetKeyDown(KeyCode.Space))
-                {
-                    Debug.Log("Player submitted actions! (Simulated)");
-
-                    var playerUnit = testUnits[0];
-                    playerUnit.ClearActions();
-                    playerUnit.AddAction(ActionType.Attack);
-                    playerUnit.AddAction(ActionType.Attack);
-                    playerUnit.AddAction(ActionType.Attack);
-
-                    ChangeState(GameState.ExcutionPhase);
-                }
+                CurrentState.Update();
             }
         }
 
-        public void ChangeState(GameState newState)
+        public void ChangeState(BattleState newState)
         {
+            if (CurrentState != null)
+            {
+                CurrentState.Exit();
+            }
+
             CurrentState = newState;
 
-            EventBus.PublishGameStateChange(newState);
-
-            switch (newState)
+            if (CurrentState != null)
             {
-                case GameState.BattleStart:
-                    Debug.Log("Battle Started! Setting up. . .");
-                    
-                    if (turnManager != null)
-                    {
-                        turnManager.SetupTurnOrder(testUnits);
-                    }
-
-                    if (deckManager != null)
-                    {
-                        deckManager.DrawFullHand();
-                    }
-
-                    ChangeState(GameState.PlanningPhase);
-                    break;
-                
-                case GameState.PlanningPhase:
-                    Debug.Log("Waiting for Player input. . .");
-                    break;
-                
-                case GameState.ExcutionPhase:
-                    Debug.Log("Watching action moving. . .");
-                    break;
-
-                case GameState.Victory:
-                    Debug.Log("Player Win.");
-                    break;
-
-                case GameState.Defeat:
-                    Debug.Log("Enemies Win.");
-                    break;
+                CurrentState.Enter();
             }
         }
     }

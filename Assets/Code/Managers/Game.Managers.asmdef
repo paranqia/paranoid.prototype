@@ -2,8 +2,8 @@
     "name": "Game.Managers",
     "rootNamespace": "",
     "references": [
-        "GUID:437b94fa09e32434d9823bdcbb203961",
-        "GUID:cd1095ee2b8054d4b8c637e3924c5702"
+        "Game.Core",
+        "Game.Gameplay"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

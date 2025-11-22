@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 523b358054eee054caf8b54b792aba2e, type: 3}
   m_Name: Strike
   m_EditorClassIdentifier: Game.Gameplay::CardData
-  cardName: 
+  cardName: Strike
   description: 
   cardType: 0
-  sanityCost: 0
+  sanityCost: 10
