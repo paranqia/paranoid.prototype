@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71440ee1416b87b4688aa53d79f2e3aa, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: Game.Gameplay::CharactersData
-  CharacterName: Player
+  characterName: Player
+  characterClass: 0
+  baseHP: 1000
   agility: 120
-  power: 100
-  durability: 100
+  power: 1000
+  durability: 600
+  maxSanity: 100

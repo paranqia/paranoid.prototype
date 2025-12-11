@@ -10,6 +10,7 @@ namespace Game.Gameplay
         public CharactersData data; // ScriptableObject for base stats
 
         [Header("Live Stats")]
+        public bool isPlayer; // Explicit flag to identify player
         public string unitName;
         public int currentHP;
         public int maxHP;
@@ -42,6 +43,7 @@ namespace Game.Gameplay
             if (plannedCommands.Count < 3)
             {
                 plannedCommands.Add(command);
+                EventBus.Publish(new CommandAddedEvent(this, command));
                 Debug.Log($"{unitName} added command: {command.GetType().Name}");
             }
             else

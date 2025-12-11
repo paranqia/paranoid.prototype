@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71440ee1416b87b4688aa53d79f2e3aa, type: 3}
-  m_Name: Boss
+  m_Name: Dummy
   m_EditorClassIdentifier: Game.Gameplay::CharactersData
-  CharacterName: Boss
-  agility: 110
-  power: 200
-  durability: 50
+  characterName: Dummy
+  characterClass: 0
+  baseHP: 1000
+  agility: 120
+  power: 1000
+  durability: 600
+  maxSanity: 100

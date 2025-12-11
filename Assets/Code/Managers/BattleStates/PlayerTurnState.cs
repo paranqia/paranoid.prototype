@@ -43,10 +43,42 @@ namespace Game.Managers.States
             // For MVP debug, use Spacebar
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("Player ended turn. Submitting actions...");
-                SubmitActionsToTimeline();
-                owner.ChangeState(new ExecutionState(owner));
+                EndTurn();
             }
+        }
+
+        public void SelectCommand(ICommand command)
+        {
+            if (owner.PlayerUnit == null) return;
+            owner.PlayerUnit.AddCommand(command);
+        }
+
+        // Helper for UI
+        public void QueueAttack()
+        {
+            // For MVP: Auto-target first enemy
+            Unit target = owner.Units.Find(u => !u.isPlayer);
+            if (target != null)
+            {
+                SelectCommand(new Game.Gameplay.BattleActions.AttackCommand(owner.PlayerUnit, target));
+            }
+        }
+
+        public void QueueDefend()
+        {
+            SelectCommand(new Game.Gameplay.BattleActions.DefendCommand(owner.PlayerUnit));
+        }
+
+        public void QueueAnalysis()
+        {
+            SelectCommand(new Game.Gameplay.BattleActions.AnalysisCommand(owner.PlayerUnit));
+        }
+
+        public void EndTurn()
+        {
+            Debug.Log("Player ended turn. Submitting actions...");
+            SubmitActionsToTimeline();
+            owner.ChangeState(new ExecutionState(owner));
         }
 
         private void SubmitActionsToTimeline()

@@ -15,7 +15,10 @@ namespace Game.Managers.States
             // TimelineManager.Instance.Setup(owner.Units); // Hypothetical
             
             // 2. Draw Cards (via DeckManager)
-            // DeckManager.Instance.DrawFullHand();
+            if (DeckManager.Instance != null)
+            {
+                DeckManager.Instance.DrawFullHand();
+            }
             
             // 3. Transition to Planning
             owner.ChangeState(new PlayerTurnState(owner));

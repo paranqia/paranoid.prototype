@@ -103,4 +103,36 @@ namespace Game.Gameplay
             Source = source;
         }
     }
+
+    // --- UI Events ---
+    public struct HandUpdatedEvent
+    {
+        public System.Collections.Generic.List<Game.Gameplay.Cards.Card> Hand;
+        public HandUpdatedEvent(System.Collections.Generic.List<Game.Gameplay.Cards.Card> hand)
+        {
+            Hand = hand;
+        }
+    }
+
+    public struct CardPlayedEvent
+    {
+        public Unit User;
+        public Game.Gameplay.Cards.Card Card;
+        public CardPlayedEvent(Unit user, Game.Gameplay.Cards.Card card)
+        {
+            User = user;
+            Card = card;
+        }
+    }
+
+    public struct CommandAddedEvent
+    {
+        public Unit Unit;
+        public ICommand Command;
+        public CommandAddedEvent(Unit unit, ICommand command)
+        {
+            Unit = unit;
+            Command = command;
+        }
+    }
 }
