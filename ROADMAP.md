@@ -1,6 +1,6 @@
 # Roadmap: PARANOID:PROTOTYPE [Ecliptica] - MVP & Graduation Demo
 
-**Status:** Draft v0.2 based on GDD v0.6
+**Status:** Draft v0.3 based on GDD v0.6
 **Target:** Gameplay-First MVP (Single Boss Encounter)
 
 ---
@@ -25,22 +25,23 @@
     - [x] Timeline Sorting logic (Phase-based by Agility)
     - [x] Party Control in PlayerTurnState (Cycle units)
 
-## 📅 Phase 2: Gameplay Mechanics & Rules (Next Step)
+## 📅 Phase 2: Gameplay Mechanics & Rules (IN PROGRESS)
 **Goal:** ใส่กติกาและความลึกของเกม (Combos, Field, Boss AI)
 
-- [ ] **Action Execution System**
-    - [x] **Reactive Timeline:** (Basic implementation done - Commands execute sequentially by Speed)
-    - [ ] **Interrupt System:** (Logic added in Timeline, needs Trigger implementation via cards/skills)
-- [ ] **Combo System**
-    - [ ] Basic 3-Hit Combos (AAA, DDD, NNN, etc.) logic
-    - [ ] Combo Resolver to modify command values
+- [x] **Combo System**
+    - [x] Basic 3-Hit Combos (AAA, DDD, NNN, etc.) logic
+    - [x] Combo Resolver to modify command values
 - [ ] **Field Resonance**
-    - [ ] FieldManager logic (Logos/Illogic/Nihil dominance counters)
+    - [x] FieldManager logic (Logos/Illogic/Nihil dominance counters)
+    - [x] Advanced Effects (Logos: +Def/-Crit, Illogic: -Def/+Crit, Nihil: Reset)
     - [ ] Visual Feedback for Field State
 - [ ] **Boss AI & Patterns**
     - [ ] Create Boss Unit with multi-health bars (Phases)
     - [ ] Implement Telegraph System (Show intended action)
     - [ ] Script Basic Boss AI (Random/Pattern mix)
+- [ ] **Action Execution System**
+    - [x] **Reactive Timeline:** (Basic implementation done - Commands execute sequentially by Speed)
+    - [ ] **Interrupt System:** (Logic added in Timeline, needs Trigger implementation via cards/skills)
 
 ## 📅 Phase 3: UI/UX & Visual Feedback
 **Goal:** ทำให้ผู้เล่นเข้าใจสิ่งที่เกิดขึ้น (Communication)
@@ -70,10 +71,3 @@
     - [ ] Sound Effects (SFX) integration
     - [ ] Background Music (BGM) implementation
     - [ ] Placeholder Art replacement with Final Assets
-
----
-
-## 📝 Immediate Next Tasks (Priority)
-
-1. **Combo System:** Implement the logic to detect AAA/DDD/NNN sequences and apply bonuses.
-2. **UI Implementation:** The backend logic is ready, now we need UI to make it playable (Party HUD, Command Slots).

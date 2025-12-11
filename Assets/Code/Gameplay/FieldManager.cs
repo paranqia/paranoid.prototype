@@ -15,7 +15,7 @@ namespace Game.Gameplay
 
         [Header("Logic")]
         private List<Element> recentElements = new List<Element>();
-        private const int RESONANCE_THRESHOLD = 3; // Needs 3 same elements to trigger
+        private const int RESONANCE_THRESHOLD = 3;
 
         private void Awake()
         {
@@ -23,7 +23,7 @@ namespace Game.Gameplay
             else Destroy(gameObject);
 
             EventBus.Subscribe<CardPlayedEvent>(OnCardPlayed);
-            EventBus.Subscribe<TurnEndedEvent>(OnTurnEnded); // Optional: Reset or decay?
+            EventBus.Subscribe<TurnEndedEvent>(OnTurnEnded);
         }
 
         private void OnDestroy()
@@ -37,7 +37,6 @@ namespace Game.Gameplay
             if (evt.Card != null && evt.Card.Data != null)
             {
                 ProcessElement(evt.Card.Data.element);
-                Debug.Log($"FieldManager: Processed Element {evt.Card.Data.element} from {evt.Card.Data.cardName}");
             }
         }
 
@@ -47,7 +46,6 @@ namespace Game.Gameplay
 
             recentElements.Add(element);
             
-            // Keep only last N elements
             if (recentElements.Count > RESONANCE_THRESHOLD)
             {
                 recentElements.RemoveAt(0);
@@ -100,7 +98,20 @@ namespace Game.Gameplay
 
         private void OnTurnEnded(TurnEndedEvent evt)
         {
-            // Optional: Decay logic (e.g., remove 1 element from history)
+            // GDD: Nihil Dominance -> Reset State at End of Turn
+            if (CurrentFieldState == FieldState.NihilDominance)
+            {
+                Debug.Log("<color=magenta>NIHIL DOMINANCE: The Void consumes all status effects.</color>");
+                // Reset Logic: Clear Buffs/Debuffs (Placeholder)
+                // Also maybe reset the field itself?
+                // For MVP: Reset Field to Neutral after effect triggers?
+                // Or keeps it until other elements overwrite? 
+                // GDD says "Reset State". Let's assume it clears Buffs.
+                
+                // Also Decay logic for resonance
+                recentElements.Clear();
+                SetFieldState(FieldState.Neutral);
+            }
         }
 
         public float GetDamageMultiplier(Element attackerElement)
@@ -108,13 +119,13 @@ namespace Game.Gameplay
             if (attackerElement == Element.None) return 1.0f;
 
             // Simplified GDD Logic:
-            // If Field matches Element -> +50% Damage (1.5x)
-            // If Field opposes Element -> -50% Damage (0.5x) (Optional)
+            // If Field matches Element -> +20% Damage (1.2x) (GDD says Element Advantage is 1.2)
+            // But Field Resonance is distinct.
+            // Let's keep a small bonus for matching field.
             
-            // Mapping Dominance to Element
-            if (CurrentFieldState == FieldState.LogosDominance && attackerElement == Element.Logos) return 1.5f;
-            if (CurrentFieldState == FieldState.IllogicDominance && attackerElement == Element.Illogic) return 1.5f;
-            if (CurrentFieldState == FieldState.NihilDominance && attackerElement == Element.Nihil) return 1.5f;
+            if (CurrentFieldState == FieldState.LogosDominance && attackerElement == Element.Logos) return 1.2f;
+            if (CurrentFieldState == FieldState.IllogicDominance && attackerElement == Element.Illogic) return 1.2f;
+            if (CurrentFieldState == FieldState.NihilDominance && attackerElement == Element.Nihil) return 1.2f;
 
             return 1.0f;
         }

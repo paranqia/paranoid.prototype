@@ -7,39 +7,130 @@ namespace Game.Gameplay
     public class Unit : MonoBehaviour
     {
         [Header("Data Blueprint")]
-        public CharactersData data; // ScriptableObject for base stats
+        public CharactersData data;
 
         [Header("Live Stats")]
-        public bool isPlayer; // Explicit flag to identify player
+        public bool isPlayer;
         public string unitName;
         public int currentHP;
         public int maxHP;
         public int currentSanity;
         public int maxSanity = 100;
         public int currentShield;
+        
+        // Base Stats (from Data)
+        public int baseAgility;
+        public int basePower;
+        public int baseDurability;
+
+        // Current Effective Stats
         public int currentAgility;
-        public int currentPower;      // Live Power (Base + Modifiers)
-        public int currentDurability; // Live Durability (Base + Modifiers)
+        public int currentPower;
+        public int currentDurability;
+        
+        // New Secondary Stats
+        public float critChance = 0.05f; // 5% Base
+        public float critDamage = 1.50f; // 150% Base
 
         [Header("State")]
         public SanityState sanityState = SanityState.Lucid;
         public List<ICommand> plannedCommands = new List<ICommand>();
 
+        private void Start()
+        {
+             // Subscribe to events
+             EventBus.Subscribe<FieldStateChangedEvent>(OnFieldStateChanged);
+        }
+
+        private void OnDestroy()
+        {
+             EventBus.Unsubscribe<FieldStateChangedEvent>(OnFieldStateChanged);
+        }
+
         public void Initialize()
         {
-            // Initialize from data if available
             if (data != null)
             {
                 unitName = data.characterName;
                 maxHP = data.baseHP;
                 currentHP = maxHP;
-                currentAgility = data.agility;
                 maxSanity = data.maxSanity;
                 currentSanity = maxSanity;
-                currentPower = data.power;
-                currentDurability = data.durability;
+                
+                // Store Base
+                baseAgility = data.agility;
+                basePower = data.power;
+                baseDurability = data.durability;
             }
-            UpdateSanityState();
+            UpdateSanityState(); // This calls RecalculateStats
+        }
+
+        private void OnFieldStateChanged(FieldStateChangedEvent evt)
+        {
+            RecalculateStats();
+        }
+
+        public void RecalculateStats()
+        {
+            if (data == null) return;
+
+            // 1. Reset to Base
+            currentPower = basePower;
+            currentDurability = baseDurability;
+            currentAgility = baseAgility;
+            
+            // 2. Sanity Modifiers
+            ApplySanityModifiers();
+
+            // 3. Field Modifiers (GDD 8.1)
+            ApplyFieldModifiers();
+
+            Debug.Log($"Stats Updated for {unitName}: ATK {currentPower}, DEF {currentDurability}, CRIT {critChance*100}%");
+        }
+
+        private void ApplySanityModifiers()
+        {
+            switch (sanityState)
+            {
+                case SanityState.Lucid:
+                    currentDurability += Mathf.RoundToInt(baseDurability * 0.2f);
+                    break;
+                case SanityState.Strained:
+                    break;
+                case SanityState.Fractured:
+                    currentPower += Mathf.RoundToInt(basePower * 0.5f);
+                    currentDurability -= Mathf.RoundToInt(baseDurability * 0.5f);
+                    break;
+            }
+        }
+
+        private void ApplyFieldModifiers()
+        {
+            if (FieldManager.Instance == null) return;
+            
+            FieldState field = FieldManager.Instance.CurrentFieldState;
+
+            // Reset secondary stats to base first (simplification)
+            critChance = 0.05f; 
+
+            switch (field)
+            {
+                case FieldState.LogosDominance:
+                    // +DEF both sides, -Crit
+                    currentDurability += Mathf.RoundToInt(baseDurability * 0.2f); // +20% DEF
+                    critChance = 0f; // No crits (Safe)
+                    break;
+                    
+                case FieldState.IllogicDominance:
+                    // -DEF both sides, +Crit Massive
+                    currentDurability -= Mathf.RoundToInt(baseDurability * 0.3f); // -30% DEF
+                    critChance += 0.50f; // +50% Crit Rate!
+                    break;
+                    
+                case FieldState.NihilDominance:
+                    // No stat mods here, effect happens at End Turn (Reset Buffs)
+                    break;
+            }
         }
 
         public void AddCommand(ICommand command)
@@ -48,11 +139,6 @@ namespace Game.Gameplay
             {
                 plannedCommands.Add(command);
                 EventBus.Publish(new CommandAddedEvent(this, command));
-                Debug.Log($"{unitName} added command: {command.GetType().Name}");
-            }
-            else
-            {
-                Debug.LogWarning($"{unitName} command queue full!");
             }
         }
 
@@ -63,15 +149,6 @@ namespace Game.Gameplay
 
         public void TakeDamage(int amount)
         {
-            // Apply Defense Mitigation? 
-            // GDD Formula: Final Damage = ... - (Target DEF / (Target DEF + K))
-            // This usually happens in the Damage Calculation logic (e.g. in AttackCommand).
-            // Here we just take the final calculated amount (minus shield).
-            
-            // But wait, if logic is in AttackCommand, then TakeDamage receives raw damage?
-            // Usually TakeDamage receives the post-mitigation damage OR raw damage.
-            // Let's assume AttackCommand calculates EVERYTHING including mitigation.
-            
             int damageAfterShield = Mathf.Max(0, amount - currentShield);
             currentShield = Mathf.Max(0, currentShield - amount);
             
@@ -88,7 +165,6 @@ namespace Game.Gameplay
         {
             Debug.Log($"{unitName} has died!");
             EventBus.Publish(new UnitDiedEvent(this));
-            // Disable or destroy
             gameObject.SetActive(false);
         }
 
@@ -142,46 +218,15 @@ namespace Game.Gameplay
                 EventBus.Publish(new SanityStateChangedEvent(this, sanityState));
             }
             
-            // Apply Stat Modifiers based on State
             RecalculateStats();
-        }
-
-        private void RecalculateStats()
-        {
-            if (data == null) return;
-
-            // Reset to base
-            currentPower = data.power;
-            currentDurability = data.durability;
-            // Agility usually constant or buffed, let's keep base for now
-            // currentAgility = data.agility; 
-
-            // Apply Sanity Modifiers (GDD 6.1)
-            switch (sanityState)
-            {
-                case SanityState.Lucid:
-                    // Bonus: +DEF (Durability)
-                    currentDurability += Mathf.RoundToInt(data.durability * 0.2f); // +20% DEF example
-                    break;
-                case SanityState.Strained:
-                    // Normal
-                    break;
-                case SanityState.Fractured:
-                    // Bonus: +ATK (Power), -DEF (Durability)
-                    currentPower += Mathf.RoundToInt(data.power * 0.5f); // +50% ATK
-                    currentDurability -= Mathf.RoundToInt(data.durability * 0.5f); // -50% DEF
-                    break;
-            }
-            
-            Debug.Log($"{unitName} Stats Updated [Sanity: {sanityState}] -> ATK: {currentPower}, DEF: {currentDurability}");
         }
         
         public float GetDefenseMitigation()
         {
-            // Formula: (Target DEF / (Target DEF + K))
-            // K = 500 (MVP)
             float k = 500f;
-            return (float)currentDurability / (currentDurability + k);
+            // Ensure Durability doesn't go below 0
+            float def = Mathf.Max(0, currentDurability);
+            return def / (def + k);
         }
     }
 }
