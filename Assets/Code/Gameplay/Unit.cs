@@ -18,6 +18,8 @@ namespace Game.Gameplay
         public int maxSanity = 100;
         public int currentShield;
         public int currentAgility;
+        public int currentPower;      // Live Power (Base + Modifiers)
+        public int currentDurability; // Live Durability (Base + Modifiers)
 
         [Header("State")]
         public SanityState sanityState = SanityState.Lucid;
@@ -34,6 +36,8 @@ namespace Game.Gameplay
                 currentAgility = data.agility;
                 maxSanity = data.maxSanity;
                 currentSanity = maxSanity;
+                currentPower = data.power;
+                currentDurability = data.durability;
             }
             UpdateSanityState();
         }
@@ -59,6 +63,15 @@ namespace Game.Gameplay
 
         public void TakeDamage(int amount)
         {
+            // Apply Defense Mitigation? 
+            // GDD Formula: Final Damage = ... - (Target DEF / (Target DEF + K))
+            // This usually happens in the Damage Calculation logic (e.g. in AttackCommand).
+            // Here we just take the final calculated amount (minus shield).
+            
+            // But wait, if logic is in AttackCommand, then TakeDamage receives raw damage?
+            // Usually TakeDamage receives the post-mitigation damage OR raw damage.
+            // Let's assume AttackCommand calculates EVERYTHING including mitigation.
+            
             int damageAfterShield = Mathf.Max(0, amount - currentShield);
             currentShield = Mathf.Max(0, currentShield - amount);
             
@@ -128,6 +141,47 @@ namespace Game.Gameplay
                 Debug.Log($"{unitName} Sanity State changed to {sanityState}");
                 EventBus.Publish(new SanityStateChangedEvent(this, sanityState));
             }
+            
+            // Apply Stat Modifiers based on State
+            RecalculateStats();
+        }
+
+        private void RecalculateStats()
+        {
+            if (data == null) return;
+
+            // Reset to base
+            currentPower = data.power;
+            currentDurability = data.durability;
+            // Agility usually constant or buffed, let's keep base for now
+            // currentAgility = data.agility; 
+
+            // Apply Sanity Modifiers (GDD 6.1)
+            switch (sanityState)
+            {
+                case SanityState.Lucid:
+                    // Bonus: +DEF (Durability)
+                    currentDurability += Mathf.RoundToInt(data.durability * 0.2f); // +20% DEF example
+                    break;
+                case SanityState.Strained:
+                    // Normal
+                    break;
+                case SanityState.Fractured:
+                    // Bonus: +ATK (Power), -DEF (Durability)
+                    currentPower += Mathf.RoundToInt(data.power * 0.5f); // +50% ATK
+                    currentDurability -= Mathf.RoundToInt(data.durability * 0.5f); // -50% DEF
+                    break;
+            }
+            
+            Debug.Log($"{unitName} Stats Updated [Sanity: {sanityState}] -> ATK: {currentPower}, DEF: {currentDurability}");
+        }
+        
+        public float GetDefenseMitigation()
+        {
+            // Formula: (Target DEF / (Target DEF + K))
+            // K = 500 (MVP)
+            float k = 500f;
+            return (float)currentDurability / (currentDurability + k);
         }
     }
 }

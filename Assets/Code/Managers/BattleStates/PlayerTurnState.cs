@@ -3,6 +3,7 @@ using Game.Managers;
 using Game.Core;
 using Game.Gameplay;
 using System.Collections.Generic;
+using Game.Gameplay.Combos; // For ComboResolver
 
 namespace Game.Managers.States
 {
@@ -135,14 +136,23 @@ namespace Game.Managers.States
             // Collect all commands from ALL units (Player + Enemy)
             foreach (var unit in owner.Units)
             {
-                foreach (var cmd in unit.plannedCommands)
+                // RESOLVE COMBOS BEFORE SUBMITTING
+                // Note: Enemy combos are also resolved here if they follow the same rules
+                List<ICommand> finalCommands = unit.plannedCommands;
+                
+                if (ComboResolver.Instance != null)
+                {
+                    finalCommands = ComboResolver.Instance.ResolveCombos(unit.plannedCommands, unit);
+                }
+                else
+                {
+                    Debug.LogWarning("ComboResolver instance not found!");
+                }
+
+                foreach (var cmd in finalCommands)
                 {
                     TimelineManager.Instance.AddCommand(cmd);
                 }
-                // Don't clear unit.plannedCommands yet? 
-                // Actually, we should clear them AFTER execution or HERE.
-                // If we clear here, Unit UI might go blank during execution.
-                // Better to clear at Start of next Turn (SetupState).
             }
         }
         

@@ -1,11 +1,11 @@
 # Roadmap: PARANOID:PROTOTYPE [Ecliptica] - MVP & Graduation Demo
 
-**Status:** Draft v0.1 based on GDD v0.6
+**Status:** Draft v0.2 based on GDD v0.6
 **Target:** Gameplay-First MVP (Single Boss Encounter)
 
 ---
 
-## 📅 Phase 1: Core Systems Foundation (Current Focus)
+## 📅 Phase 1: Core Systems Foundation (COMPLETE)
 **Goal:** ทำให้ระบบพื้นฐานทำงานได้ครบวงจร (Core Loop Playable)
 
 - [x] **Project Structure & Architecture**
@@ -15,22 +15,22 @@
 - [x] **Character & Unit Foundation**
     - [x] Unit Class (HP, Sanity, Stats)
     - [x] ScriptableObjects for CharacterData
-    - [ ] **[TODO]** Implement Sanity States (Lucid/Strained/Fractured) effects
+    - [x] Sanity States Effects (Lucid/Strained/Fractured stats calculation)
 - [x] **Card System (Infinite Draw)**
     - [x] CardData Structure (ScriptableObject)
     - [x] DeckManager Refactor (Shared Hand from Party Pool)
-    - [ ] **[TODO]** Implement Card Lock mechanic
-- [ ] **Battle Flow (Turn-Based)**
+    - [x] Card Lock mechanic
+- [x] **Battle Flow (Turn-Based)**
     - [x] BattleManager State Machine (Setup -> Player -> Execution -> Resolution)
-    - [ ] **[TODO]** Implement Turn Order logic (TimelineManager based on Agility)
-    - [ ] **[TODO]** Support Multi-Unit Party control in PlayerTurnState
+    - [x] Timeline Sorting logic (Phase-based by Agility)
+    - [x] Party Control in PlayerTurnState (Cycle units)
 
 ## 📅 Phase 2: Gameplay Mechanics & Rules (Next Step)
 **Goal:** ใส่กติกาและความลึกของเกม (Combos, Field, Boss AI)
 
 - [ ] **Action Execution System**
-    - [ ] **Reactive Timeline:** ทำให้ Action ทำงานทีละตัวตามคิว ไม่ใช่รวดเดียวจบ
-    - [ ] **Interrupt System:** สร้างเงื่อนไขการขัดจังหวะ (Stun/Cancel)
+    - [x] **Reactive Timeline:** (Basic implementation done - Commands execute sequentially by Speed)
+    - [ ] **Interrupt System:** (Logic added in Timeline, needs Trigger implementation via cards/skills)
 - [ ] **Combo System**
     - [ ] Basic 3-Hit Combos (AAA, DDD, NNN, etc.) logic
     - [ ] Combo Resolver to modify command values
@@ -75,7 +75,5 @@
 
 ## 📝 Immediate Next Tasks (Priority)
 
-1. **Party Control Logic:** Update `PlayerTurnState` to handle input for multiple characters (switch focus).
-2. **Timeline Implementation:** Build the queue sorting logic based on Agility.
-3. **Card Locking:** Add the ability to keep cards for next turn.
-
+1. **Combo System:** Implement the logic to detect AAA/DDD/NNN sequences and apply bonuses.
+2. **UI Implementation:** The backend logic is ready, now we need UI to make it playable (Party HUD, Command Slots).

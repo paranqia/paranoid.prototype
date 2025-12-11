@@ -12,6 +12,9 @@ namespace Game.Gameplay.BattleActions
         public CommandPriority Priority => CommandPriority.Normal;
         public CommandTags Tags => CommandTags.Melee;
 
+        // Modifiers
+        public float DamageMultiplier { get; set; } = 1.0f;
+
         public AttackCommand(Unit owner, Unit target, Element element = Element.None)
         {
             Owner = owner;
@@ -32,31 +35,42 @@ namespace Game.Gameplay.BattleActions
             // TODO: Play Animation
             yield return new WaitForSeconds(0.5f); 
 
-            // Calculate Damage
-            int baseDamage = 100;
-            float multiplier = 1.0f;
+            // --- DAMAGE CALCULATION ---
+            // 1. Base ATK
+            float atk = Owner.currentPower;
+            float skillMult = 1.0f * DamageMultiplier; // Apply Combo/Bonus Multiplier here
+            float rawDamage = atk * skillMult;
 
-            // Apply Field Modifier
+            // 2. Defense Mitigation
+            float mitigation = Target.GetDefenseMitigation();
+            float damageAfterDef = rawDamage * (1.0f - mitigation);
+
+            // 3. Element Multiplier
+            float elementMult = 1.0f;
             if (FieldManager.Instance != null)
             {
-                multiplier = FieldManager.Instance.GetDamageMultiplier(attackElement);
-                if (multiplier != 1.0f)
+                elementMult = FieldManager.Instance.GetDamageMultiplier(attackElement);
+                if (elementMult != 1.0f)
                 {
-                    Debug.Log($"<color=yellow>Field Modifier Applied! x{multiplier}</color>");
+                    Debug.Log($"<color=yellow>Field Modifier Applied! x{elementMult}</color>");
                 }
             }
             
-            int damage = Mathf.RoundToInt(baseDamage * multiplier);
+            // 4. Crit Multiplier (TODO: Luck stat)
+            float critMult = 1.0f;
             bool isCrit = false;
 
+            int finalDamage = Mathf.RoundToInt(damageAfterDef * elementMult * critMult);
+            finalDamage = Mathf.Max(1, finalDamage);
+
             // Publish Event
-            EventBus.Publish(new UnitDamagedEvent(Target, Owner, damage, isCrit));
+            EventBus.Publish(new UnitDamagedEvent(Target, Owner, finalDamage, isCrit));
             
             // Apply Damage Logic
-            Target.TakeDamage(damage);
+            Target.TakeDamage(finalDamage);
             
-            Debug.Log($"{Target.unitName} takes {damage} damage!");
-            yield return new WaitForSeconds(0.5f); // Post-hit delay
+            Debug.Log($"{Target.unitName} takes {finalDamage} damage! (Mitigation: {mitigation*100:F1}%)");
+            yield return new WaitForSeconds(0.5f);
         }
     }
 }
