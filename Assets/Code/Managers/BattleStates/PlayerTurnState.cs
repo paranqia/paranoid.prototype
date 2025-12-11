@@ -79,8 +79,7 @@ namespace Game.Managers.States
         {
             currentActiveUnit = unit;
             Debug.Log($"<color=green>Selected Unit: {unit.unitName}</color>");
-            // TODO: Publish UnitSelectedEvent for UI to update (show this unit's command queue)
-            // EventBus.Publish(new UnitSelectedEvent(unit));
+            EventBus.Publish(new UnitSelectedEvent(unit));
         }
 
         private void CycleNextUnit()

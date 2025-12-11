@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Game.Gameplay.Cards;
 using Game.Managers;
+using Game.Core; // For EventBus
 
 namespace Game.UI
 {
@@ -11,8 +12,11 @@ namespace Game.UI
         public Text nameText;
         public Text costText;
         public Text descriptionText;
+        public Text ownerText; // New: Show who owns this skill
         public Image artworkImage;
+        public Image lockIcon; // New: Visual for lock state
         public Button cardButton;
+        public Button lockButton; // New: Specific button to toggle lock
 
         private Card currentCard;
 
@@ -24,24 +28,86 @@ namespace Game.UI
             if (costText) costText.text = card.Data.cost.ToString();
             if (descriptionText) descriptionText.text = card.Data.description;
             if (artworkImage) artworkImage.sprite = card.Data.artwork;
+            
+            // Owner Indicator
+            if (ownerText && card.Owner != null)
+            {
+                ownerText.text = card.Owner.unitName;
+                // Optional: color code based on owner?
+            }
 
+            // Lock State
+            UpdateLockVisual();
+
+            // Interactivity
             cardButton.onClick.RemoveAllListeners();
             cardButton.onClick.AddListener(OnCardClicked);
+
+            if (lockButton)
+            {
+                lockButton.onClick.RemoveAllListeners();
+                lockButton.onClick.AddListener(OnLockClicked);
+            }
+        }
+
+        private void UpdateLockVisual()
+        {
+            if (lockIcon)
+            {
+                lockIcon.enabled = currentCard.IsLocked;
+                // Or change color of the button/border
+            }
+        }
+
+        private void OnLockClicked()
+        {
+            // Toggle Logic
+            if (DeckManager.Instance != null)
+            {
+                DeckManager.Instance.ToggleLockCard(currentCard);
+                UpdateLockVisual(); // Optimistic update
+            }
         }
 
         private void OnCardClicked()
         {
             Debug.Log($"Card Clicked: {currentCard.Data.cardName}");
-            // Logic to play card
-            // For MVP: Directly play it (assuming no target or auto-target)
-            // In real game: Select Card -> Select Target -> Play
             
-            // For now, let's assume we play it on a random enemy or self depending on type
-            // Or just notify a "CardSelected" event and let a PlayerController handle it.
+            // Playing the card
+            // For MVP: We assume the target is the selected Enemy (or auto-target)
+            // But Card.Play() requires a target.
             
-            // MVP Shortcut: Tell DeckManager to play it (remove from hand) and execute effect
+            // Logic:
+            // 1. Check Sanity Cost
+            if (currentCard.Owner.currentSanity < currentCard.Data.cost)
+            {
+                Debug.LogWarning("Not enough Sanity!");
+                // Visual feedback?
+                return;
+            }
+
+            // 2. Consume Sanity
+            currentCard.Owner.SpendSanity(currentCard.Data.cost);
+
+            // 3. Find Target (Simplified for MVP)
+            // If Attack -> First Enemy
+            // If Defend/Buff -> Self or Ally
+            Game.Gameplay.Unit target = null;
+
+            if (currentCard.Data.targetType == TargetType.SingleEnemy || currentCard.Data.targetType == TargetType.RandomEnemy || currentCard.Data.targetType == TargetType.AllEnemies)
+            {
+                // Find enemy
+                target = BattleManager.Instance.Units.Find(u => !u.isPlayer);
+            }
+            else
+            {
+                // Self/Ally
+                target = currentCard.Owner;
+            }
+
+            // 4. Play
+            currentCard.Play(target);
             DeckManager.Instance.PlayCard(currentCard);
-            currentCard.Play(null); // Target null for now
         }
     }
 }

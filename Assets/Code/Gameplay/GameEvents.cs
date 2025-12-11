@@ -1,5 +1,4 @@
 using UnityEngine;
-using Game.Gameplay; // For Unit reference
 using Game.Core; // For Enums (GameState, SanityState, FieldState)
 
 namespace Game.Gameplay
@@ -58,6 +57,26 @@ namespace Game.Gameplay
     {
         public Unit DeadUnit;
         public UnitDiedEvent(Unit unit) { DeadUnit = unit; }
+    }
+
+    public struct UnitSelectedEvent
+    {
+        public Unit SelectedUnit;
+        public UnitSelectedEvent(Unit unit) { SelectedUnit = unit; }
+    }
+
+    public struct BossPhaseChangedEvent
+    {
+        public Unit Boss;
+        public int NewPhaseIndex;
+        public int MaxPhases;
+        
+        public BossPhaseChangedEvent(Unit boss, int newPhase, int maxPhases)
+        {
+            Boss = boss;
+            NewPhaseIndex = newPhase;
+            MaxPhases = maxPhases;
+        }
     }
 
     // --- Stat / Resource Events ---

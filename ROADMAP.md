@@ -1,6 +1,6 @@
 # Roadmap: PARANOID:PROTOTYPE [Ecliptica] - MVP & Graduation Demo
 
-**Status:** Draft v0.3 based on GDD v0.6
+**Status:** Draft v0.4 (Phase 2 Logic Mostly Done)
 **Target:** Gameplay-First MVP (Single Boss Encounter)
 
 ---
@@ -25,31 +25,31 @@
     - [x] Timeline Sorting logic (Phase-based by Agility)
     - [x] Party Control in PlayerTurnState (Cycle units)
 
-## 📅 Phase 2: Gameplay Mechanics & Rules (IN PROGRESS)
+## 📅 Phase 2: Gameplay Mechanics & Rules (Logic DONE, Needs AI)
 **Goal:** ใส่กติกาและความลึกของเกม (Combos, Field, Boss AI)
 
 - [x] **Combo System**
     - [x] Basic 3-Hit Combos (AAA, DDD, NNN, etc.) logic
     - [x] Combo Resolver to modify command values
-- [ ] **Field Resonance**
+- [x] **Field Resonance**
     - [x] FieldManager logic (Logos/Illogic/Nihil dominance counters)
     - [x] Advanced Effects (Logos: +Def/-Crit, Illogic: -Def/+Crit, Nihil: Reset)
-    - [ ] Visual Feedback for Field State
 - [ ] **Boss AI & Patterns**
-    - [ ] Create Boss Unit with multi-health bars (Phases)
+    - [x] Create Boss Unit with multi-health bars (Phases)
     - [ ] Implement Telegraph System (Show intended action)
-    - [ ] Script Basic Boss AI (Random/Pattern mix)
+    - [ ] Script Boss AI Logic (Select moves based on Phase)
 - [ ] **Action Execution System**
-    - [x] **Reactive Timeline:** (Basic implementation done - Commands execute sequentially by Speed)
-    - [ ] **Interrupt System:** (Logic added in Timeline, needs Trigger implementation via cards/skills)
+    - [x] **Reactive Timeline:** (Basic implementation done)
+    - [ ] **Interrupt System:** (Logic added, needs Trigger implementation)
 
-## 📅 Phase 3: UI/UX & Visual Feedback
+## 📅 Phase 3: UI/UX & Visual Feedback (NEXT PRIORITY)
 **Goal:** ทำให้ผู้เล่นเข้าใจสิ่งที่เกิดขึ้น (Communication)
 
 - [ ] **Battle UI Overhaul**
     - [ ] Party Member Select / Status HUD (HP, Sanity Bar)
     - [ ] **Command Queue UI:** Show 3 slots per character clearly
     - [ ] **Timeline UI:** Show turn order strip
+    - [ ] **Field State UI:** Show current dominant element
 - [ ] **Card UI**
     - [ ] Card Visuals (Cost, Type, Owner indicator)
     - [ ] Drag & Drop / Click to Select interaction

@@ -36,18 +36,18 @@ namespace Game.Gameplay
         public SanityState sanityState = SanityState.Lucid;
         public List<ICommand> plannedCommands = new List<ICommand>();
 
-        private void Start()
+        protected virtual void Start()
         {
              // Subscribe to events
              EventBus.Subscribe<FieldStateChangedEvent>(OnFieldStateChanged);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
              EventBus.Unsubscribe<FieldStateChangedEvent>(OnFieldStateChanged);
         }
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             if (data != null)
             {
@@ -147,7 +147,7 @@ namespace Game.Gameplay
             plannedCommands.Clear();
         }
 
-        public void TakeDamage(int amount)
+        public virtual void TakeDamage(int amount)
         {
             int damageAfterShield = Mathf.Max(0, amount - currentShield);
             currentShield = Mathf.Max(0, currentShield - amount);
@@ -161,7 +161,7 @@ namespace Game.Gameplay
             }
         }
 
-        private void Die()
+        protected virtual void Die()
         {
             Debug.Log($"{unitName} has died!");
             EventBus.Publish(new UnitDiedEvent(this));
