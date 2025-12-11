@@ -93,9 +93,25 @@ namespace Game.Gameplay
 
         public void RestoreSanity(int amount)
         {
-            currentSanity = Mathf.Min(maxSanity, currentSanity + amount);
-            UpdateSanityState();
-            EventBus.Publish(new SanityChangedEvent(this, currentSanity, maxSanity));
+            ModifySanity(amount);
+        }
+
+        public void ModifySanity(int amount)
+        {
+            int oldSanity = currentSanity;
+            currentSanity = Mathf.Clamp(currentSanity + amount, 0, maxSanity);
+
+            if (currentSanity != oldSanity)
+            {
+                UpdateSanityState();
+                EventBus.Publish(new SanityChangedEvent(this, currentSanity, maxSanity));
+
+                if (currentSanity <= 0 && oldSanity > 0)
+                {
+                    Debug.Log($"<color=red>{unitName} has suffered a SANITY BREAK!</color>");
+                    EventBus.Publish(new SanityZeroEvent(this));
+                }
+            }
         }
 
         private void UpdateSanityState()

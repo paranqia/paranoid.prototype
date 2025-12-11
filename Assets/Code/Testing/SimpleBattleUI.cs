@@ -56,6 +56,16 @@ namespace Game.Testing
                 state.EndTurn();
             }
 
+            // --- SANITY DEBUG ---
+            if (GUI.Button(new Rect(340, 40, 100, 30), "Mental Dmg"))
+            {
+                 player.ModifySanity(-20);
+            }
+            if (GUI.Button(new Rect(340, 80, 100, 30), "Heal Sanity"))
+            {
+                 player.ModifySanity(20);
+            }
+
             // --- DEBUG SECTION ---
             GUI.Label(new Rect(10, 170, 300, 20), $"FIELD: {FieldManager.Instance?.CurrentFieldState}");
             

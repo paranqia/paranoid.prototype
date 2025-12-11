@@ -85,6 +85,12 @@ namespace Game.Gameplay
         }
     }
 
+    public struct SanityZeroEvent
+    {
+        public Unit Target;
+        public SanityZeroEvent(Unit target) { Target = target; }
+    }
+
     // --- Field Events ---
     public struct FieldStateChangedEvent
     {
