@@ -1,6 +1,6 @@
 # Roadmap: PARANOID:PROTOTYPE [Ecliptica] - MVP & Graduation Demo
 
-**Status:** Draft v0.4 (Phase 2 Logic Mostly Done)
+**Status:** Draft v0.5 (Phase 2.5 Logic & Phase 3 Core UI DONE)
 **Target:** Gameplay-First MVP (Single Boss Encounter)
 
 ---
@@ -25,7 +25,7 @@
     - [x] Timeline Sorting logic (Phase-based by Agility)
     - [x] Party Control in PlayerTurnState (Cycle units)
 
-## 📅 Phase 2: Gameplay Mechanics & Rules (Logic DONE, Needs AI)
+## 📅 Phase 2: Gameplay Mechanics & Rules (COMPLETE)
 **Goal:** ใส่กติกาและความลึกของเกม (Combos, Field, Boss AI)
 
 - [x] **Combo System**
@@ -34,31 +34,31 @@
 - [x] **Field Resonance**
     - [x] FieldManager logic (Logos/Illogic/Nihil dominance counters)
     - [x] Advanced Effects (Logos: +Def/-Crit, Illogic: -Def/+Crit, Nihil: Reset)
-- [ ] **Boss AI & Patterns**
+- [x] **Boss AI & Patterns**
     - [x] Create Boss Unit with multi-health bars (Phases)
-    - [ ] Implement Telegraph System (Show intended action)
-    - [ ] Script Boss AI Logic (Select moves based on Phase)
-- [ ] **Action Execution System**
-    - [x] **Reactive Timeline:** (Basic implementation done)
-    - [ ] **Interrupt System:** (Logic added, needs Trigger implementation)
+    - [x] Boss AI Controller (Selects pattern by Phase)
+    - [x] Telegraph System (Broadcasts Intent Event)
+- [x] **Action Execution System**
+    - [x] **Reactive Timeline:** (Commands execute sequentially by Speed)
+    - [x] **Interrupt System:** (Logic added, Boss Intent declared at start of turn)
 
-## 📅 Phase 3: UI/UX & Visual Feedback (NEXT PRIORITY)
+## 📅 Phase 3: UI/UX & Visual Feedback (CORE DONE)
 **Goal:** ทำให้ผู้เล่นเข้าใจสิ่งที่เกิดขึ้น (Communication)
 
-- [ ] **Battle UI Overhaul**
-    - [ ] Party Member Select / Status HUD (HP, Sanity Bar)
-    - [ ] **Command Queue UI:** Show 3 slots per character clearly
-    - [ ] **Timeline UI:** Show turn order strip
-    - [ ] **Field State UI:** Show current dominant element
-- [ ] **Card UI**
-    - [ ] Card Visuals (Cost, Type, Owner indicator)
-    - [ ] Drag & Drop / Click to Select interaction
-    - [ ] Lock Toggle UI
+- [x] **Battle UI Overhaul**
+    - [x] Party Member Select / Status HUD (HP, Sanity Bar)
+    - [x] **Command Queue UI:** Shows 3 slots per character
+    - [ ] **Timeline UI:** Show turn order strip (Low Priority for MVP)
+- [x] **Card UI**
+    - [x] Card Visuals (Cost, Type, Owner indicator)
+    - [x] **Hand UI:** Interaction Logic (Click to play, Lock toggle)
+- [x] **Telegraph UI**
+    - [x] Icon Display for Boss Intents (Attack, Defend, Ultimate)
 - [ ] **Feedback**
     - [ ] Damage Numbers (Popups)
     - [ ] Sanity Break Visual Effects (Glitch/Screen shake)
 
-## 📅 Phase 4: Content & Tuning (Pre-Demo)
+## 📅 Phase 4: Content & Tuning (NEXT STEP)
 **Goal:** เติมเนื้อหาและปรับสมดุล
 
 - [ ] **Content Implementation**

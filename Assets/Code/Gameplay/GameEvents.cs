@@ -1,5 +1,7 @@
 using UnityEngine;
 using Game.Core; // For Enums (GameState, SanityState, FieldState)
+using System.Collections.Generic; // For List
+using Game.Gameplay.AI; // For BossIntent
 
 namespace Game.Gameplay
 {
@@ -76,6 +78,17 @@ namespace Game.Gameplay
             Boss = boss;
             NewPhaseIndex = newPhase;
             MaxPhases = maxPhases;
+        }
+    }
+
+    public struct BossIntentDeclaredEvent
+    {
+        public Unit Boss;
+        public List<BossIntent> Intents;
+        public BossIntentDeclaredEvent(Unit boss, List<BossIntent> intents)
+        {
+            Boss = boss;
+            Intents = intents;
         }
     }
 
