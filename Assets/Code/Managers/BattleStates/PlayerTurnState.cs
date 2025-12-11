@@ -60,7 +60,8 @@ namespace Game.Managers.States
             Unit target = owner.Units.Find(u => !u.isPlayer);
             if (target != null)
             {
-                SelectCommand(new Game.Gameplay.BattleActions.AttackCommand(owner.PlayerUnit, target));
+                // For Debug: Assume Player Attacks are LOGOS element
+                SelectCommand(new Game.Gameplay.BattleActions.AttackCommand(owner.PlayerUnit, target, Game.Core.Element.Logos));
             }
         }
 

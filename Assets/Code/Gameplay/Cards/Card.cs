@@ -43,8 +43,8 @@ namespace Game.Gameplay.Cards
             switch (action.actionType)
             {
                 case ActionType.Attack:
-                    // TODO: Pass action.value as damage
-                    return new AttackCommand(Owner, target);
+                    // Pass element from Card Data
+                    return new AttackCommand(Owner, target, Data.element);
                 
                 case ActionType.Defend:
                     // TODO: Pass action.value as shield

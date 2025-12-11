@@ -3,7 +3,7 @@ using Game.Core;
 using Game.Gameplay;
 using System.Collections.Generic;
 
-namespace Game.Managers
+namespace Game.Gameplay
 {
     public class FieldManager : MonoBehaviour
     {
@@ -101,6 +101,22 @@ namespace Game.Managers
         private void OnTurnEnded(TurnEndedEvent evt)
         {
             // Optional: Decay logic (e.g., remove 1 element from history)
+        }
+
+        public float GetDamageMultiplier(Element attackerElement)
+        {
+            if (attackerElement == Element.None) return 1.0f;
+
+            // Simplified GDD Logic:
+            // If Field matches Element -> +50% Damage (1.5x)
+            // If Field opposes Element -> -50% Damage (0.5x) (Optional)
+            
+            // Mapping Dominance to Element
+            if (CurrentFieldState == FieldState.LogosDominance && attackerElement == Element.Logos) return 1.5f;
+            if (CurrentFieldState == FieldState.IllogicDominance && attackerElement == Element.Illogic) return 1.5f;
+            if (CurrentFieldState == FieldState.NihilDominance && attackerElement == Element.Nihil) return 1.5f;
+
+            return 1.0f;
         }
     }
 }
