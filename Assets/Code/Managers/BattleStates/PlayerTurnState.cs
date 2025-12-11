@@ -1,78 +1,122 @@
 using UnityEngine;
 using Game.Managers;
-using Game.Core; // For GameState enum
-using Game.Gameplay; // For Unit, ICommand, BattleActions
+using Game.Core;
+using Game.Gameplay;
+using System.Collections.Generic;
 
 namespace Game.Managers.States
 {
     public class PlayerTurnState : BattleState
     {
+        private int currentUnitIndex = 0;
+        private Unit currentActiveUnit;
+
         public PlayerTurnState(BattleManager owner) : base(owner) { }
 
         public override void Enter()
         {
             Debug.Log("Entering Player Turn (Planning Phase)...");
             EventBus.Publish(new GameStateChangedEvent(GameState.PlanningPhase));
-            
-            // MVP: Generate Enemy Actions here (or in Setup)
+
+            // Generate Enemy Actions (Simulated for now)
             GenerateEnemyActions();
-            
-            // Enable UI interaction
+
+            // Setup Player Party Interaction
+            currentUnitIndex = 0;
+            if (owner.PlayerParty.Count > 0)
+            {
+                SelectUnit(owner.PlayerParty[0]);
+            }
+            else
+            {
+                Debug.LogError("No Player Units in Party!");
+            }
         }
 
         private void GenerateEnemyActions()
         {
+            // In a real implementation, this would call an EnemyAI system
             foreach (var unit in owner.Units)
             {
-                // Simple check: if not player, add random actions
-                // For MVP, assume index 0 is player, others are enemies
-                if (owner.Units.IndexOf(unit) != 0) 
+                if (!unit.isPlayer)
                 {
                     unit.ClearCommands();
-                    // Add 3 random actions
-                    unit.AddCommand(new Game.Gameplay.BattleActions.AttackCommand(unit, owner.Units[0])); // Attack player
-                    unit.AddCommand(new Game.Gameplay.BattleActions.DefendCommand(unit));
-                    unit.AddCommand(new Game.Gameplay.BattleActions.AnalysisCommand(unit));
+                    // Basic AI: Attack Player
+                    // Need to find a target (Random player unit)
+                    Unit target = owner.PlayerParty.Count > 0 
+                        ? owner.PlayerParty[Random.Range(0, owner.PlayerParty.Count)] 
+                        : null;
+
+                    if (target != null)
+                    {
+                        unit.AddCommand(new Game.Gameplay.BattleActions.AttackCommand(unit, target));
+                        unit.AddCommand(new Game.Gameplay.BattleActions.DefendCommand(unit));
+                        unit.AddCommand(new Game.Gameplay.BattleActions.AnalysisCommand(unit));
+                    }
                 }
             }
         }
 
         public override void Update()
         {
-            // Check for "End Turn" input
-            // For MVP debug, use Spacebar
-            if (Input.GetKeyDown(KeyCode.Space))
+            // Input Handling for Switching Units (Tab or UI buttons)
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
+                CycleNextUnit();
+            }
+
+            // Confirm / End Turn (Space)
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)) // Changed to Return/Enter for "Commit" feel
+            {
+                // Check if all units have commands?
+                // For MVP, just End Turn
                 EndTurn();
             }
         }
 
-        public void SelectCommand(ICommand command)
+        private void SelectUnit(Unit unit)
         {
-            if (owner.PlayerUnit == null) return;
-            owner.PlayerUnit.AddCommand(command);
+            currentActiveUnit = unit;
+            Debug.Log($"<color=green>Selected Unit: {unit.unitName}</color>");
+            // TODO: Publish UnitSelectedEvent for UI to update (show this unit's command queue)
+            // EventBus.Publish(new UnitSelectedEvent(unit));
         }
 
-        // Helper for UI
+        private void CycleNextUnit()
+        {
+            if (owner.PlayerParty.Count <= 1) return;
+
+            currentUnitIndex = (currentUnitIndex + 1) % owner.PlayerParty.Count;
+            SelectUnit(owner.PlayerParty[currentUnitIndex]);
+        }
+
+        // --- Command Selection Interface ---
+
+        public void SelectCommand(ICommand command)
+        {
+            if (currentActiveUnit == null) return;
+            currentActiveUnit.AddCommand(command);
+        }
+
+        // Helper for UI/Buttons
         public void QueueAttack()
         {
-            // For MVP: Auto-target first enemy
+            // Auto-target first enemy for now
             Unit target = owner.Units.Find(u => !u.isPlayer);
             if (target != null)
             {
-                // For Debug: Assume Player Attacks are LOGOS element
-                SelectCommand(new Game.Gameplay.BattleActions.AttackCommand(owner.PlayerUnit, target, Game.Core.Element.Logos));
+                SelectCommand(new Game.Gameplay.BattleActions.AttackCommand(currentActiveUnit, target, Game.Core.Element.Logos));
             }
         }
 
         public void QueueDefend()
         {
-            SelectCommand(new Game.Gameplay.BattleActions.DefendCommand(owner.PlayerUnit));
+            SelectCommand(new Game.Gameplay.BattleActions.DefendCommand(currentActiveUnit));
         }
 
         public void QueueAnalysis()
         {
-            SelectCommand(new Game.Gameplay.BattleActions.AnalysisCommand(owner.PlayerUnit));
+            SelectCommand(new Game.Gameplay.BattleActions.AnalysisCommand(currentActiveUnit));
         }
 
         public void EndTurn()
@@ -88,15 +132,23 @@ namespace Game.Managers.States
 
             TimelineManager.Instance.ClearQueue();
 
-            // Collect all commands from all units
+            // Collect all commands from ALL units (Player + Enemy)
             foreach (var unit in owner.Units)
             {
                 foreach (var cmd in unit.plannedCommands)
                 {
                     TimelineManager.Instance.AddCommand(cmd);
                 }
-                unit.ClearCommands(); // Clear after submitting
+                // Don't clear unit.plannedCommands yet? 
+                // Actually, we should clear them AFTER execution or HERE.
+                // If we clear here, Unit UI might go blank during execution.
+                // Better to clear at Start of next Turn (SetupState).
             }
+        }
+        
+        public override void Exit()
+        {
+            // Cleanup if needed
         }
     }
 }

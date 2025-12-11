@@ -8,6 +8,6 @@ namespace Game.Core
         Aegis,
         Benediction,
         Manipulation,
-        Elderitch
+        Eldritch
     }
 }

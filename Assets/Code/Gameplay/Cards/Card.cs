@@ -10,8 +10,8 @@ namespace Game.Gameplay.Cards
     {
         public CardData Data { get; private set; }
         public Unit Owner { get; private set; }
+        public bool IsLocked { get; set; } = false; // Add Lock state
         
-        // Unique ID for this instance?
         public string InstanceID { get; private set; }
 
         public Card(CardData data, Unit owner)
@@ -19,6 +19,14 @@ namespace Game.Gameplay.Cards
             Data = data;
             Owner = owner;
             InstanceID = System.Guid.NewGuid().ToString();
+            IsLocked = false;
+        }
+
+        public void ToggleLock()
+        {
+            IsLocked = !IsLocked;
+            // Can add validation here (e.g. max locks) but might be better in DeckManager
+            Debug.Log($"Card {Data.cardName} Lock State: {IsLocked}");
         }
 
         public void Play(Unit target)

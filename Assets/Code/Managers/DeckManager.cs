@@ -131,13 +131,20 @@ namespace Game.Managers
 
         public void DiscardHand()
         {
-            // TODO: Implement Lock mechanic here. 
-            // For now, clear all cards (assuming no locks).
-            // In the future: hand.RemoveAll(c => !c.IsLocked);
+            // Implement Lock Mechanic:
+            // Remove only cards that are NOT locked.
             
-            hand.Clear();
+            // Keep locked cards
+            var lockedCards = hand.Where(c => c.IsLocked).ToList();
+            
+            // (Optional) Publish event or log discarded cards if needed
+            int discardedCount = hand.Count - lockedCards.Count;
+            
+            // Update hand to only contain locked cards
+            hand = lockedCards;
+            
             EventBus.Publish(new HandUpdatedEvent(hand));
-            Debug.Log("Hand Discarded (Refreshed).");
+            Debug.Log($"Hand Refreshed. Kept {lockedCards.Count} locked cards. Discarded {discardedCount}.");
         }
 
         public void PlayCard(Card card)
@@ -147,6 +154,17 @@ namespace Game.Managers
                 hand.Remove(card);
                 // No discard pile in infinite draw system, just remove from hand
                 EventBus.Publish(new HandUpdatedEvent(hand));
+            }
+        }
+        
+        // Helper to Toggle Lock from UI
+        public void ToggleLockCard(Card card)
+        {
+            if (hand.Contains(card))
+            {
+                card.ToggleLock();
+                // Might need to update UI visually
+                EventBus.Publish(new HandUpdatedEvent(hand)); 
             }
         }
     }

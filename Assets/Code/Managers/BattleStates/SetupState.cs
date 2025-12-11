@@ -1,5 +1,7 @@
 using UnityEngine;
 using Game.Managers;
+using Game.Core; // For GameState enum
+using Game.Gameplay; // For GameEvents
 
 namespace Game.Managers.States
 {
@@ -10,17 +12,26 @@ namespace Game.Managers.States
         public override void Enter()
         {
             Debug.Log("Entering Setup State...");
-            
-            // 1. Setup Turn Order (via TurnManager? Or TimelineManager?)
-            // TimelineManager.Instance.Setup(owner.Units); // Hypothetical
-            
-            // 2. Draw Cards (via DeckManager)
-            if (DeckManager.Instance != null)
+            EventBus.Publish(new GameStateChangedEvent(GameState.BattleStart)); // Or SetupPhase
+
+            // 1. Reset / Prepare Units
+            foreach (var unit in owner.Units)
             {
-                DeckManager.Instance.DrawFullHand();
+                // Clear old commands from previous turn
+                unit.ClearCommands();
+                
+                // Regenerate Sanity/Shields if needed?
+                // Trigger Start of Turn Effects
             }
             
-            // 3. Transition to Planning
+            // 2. Draw Cards
+            if (DeckManager.Instance != null)
+            {
+                // GDD: Draw until full (5)
+                DeckManager.Instance.DrawFullHand();
+            }
+
+            // 3. Transition to Player Turn
             owner.ChangeState(new PlayerTurnState(owner));
         }
     }
