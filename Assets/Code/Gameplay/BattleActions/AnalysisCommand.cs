@@ -10,6 +10,9 @@ namespace Game.Gameplay.BattleActions
         public CommandPriority Priority => CommandPriority.Normal;
         public CommandTags Tags => CommandTags.None;
 
+        // Modifiers
+        public float SanityMultiplier { get; set; } = 1.0f;
+
         public AnalysisCommand(Unit owner)
         {
             Owner = owner;
@@ -21,12 +24,18 @@ namespace Game.Gameplay.BattleActions
             
             yield return new WaitForSeconds(0.5f);
 
-            int restoreAmount = 20; // Base
-            Owner.RestoreSanity(restoreAmount);
+            // Base Sanity Restore (GDD 7.2.5: Base = 20)
+            int baseRestore = 20;
             
-            EventBus.Publish(new SanityChangedEvent(Owner, Owner.currentSanity, Owner.maxSanity));
+            // Anomaly Modifier (TODO: Implement Anomaly Stat in Unit)
+            // For now use basic multiplier
+            int finalRestore = Mathf.RoundToInt(baseRestore * SanityMultiplier);
+
+            Owner.RestoreSanity(finalRestore);
             
-            Debug.Log($"{Owner.unitName} restored {restoreAmount} Sanity.");
+            // Publish event if needed, though Unit.RestoreSanity handles it
+            
+            Debug.Log($"{Owner.unitName} restored {finalRestore} Sanity.");
             yield return null;
         }
     }

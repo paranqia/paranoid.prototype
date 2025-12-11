@@ -10,6 +10,9 @@ namespace Game.Gameplay.BattleActions
         public CommandPriority Priority => CommandPriority.Normal;
         public CommandTags Tags => CommandTags.Defensive;
 
+        // Modifiers
+        public float ShieldMultiplier { get; set; } = 1.0f;
+
         public DefendCommand(Unit owner)
         {
             Owner = owner;
@@ -23,9 +26,14 @@ namespace Game.Gameplay.BattleActions
             yield return new WaitForSeconds(0.5f);
 
             // Add Shield logic
-            // Owner.AddShield(50); // Placeholder
+            // Formula: ShieldGain = Base * DurabilityScale * Multiplier
+            int baseShield = 20;
+            float statScale = Owner.currentDurability * 0.1f; // Example scaling
+            int totalShield = Mathf.RoundToInt((baseShield + statScale) * ShieldMultiplier);
+
+            Owner.currentShield += totalShield;
             
-            Debug.Log($"{Owner.unitName} gained Shield!");
+            Debug.Log($"{Owner.unitName} gained {totalShield} Shield! (Current: {Owner.currentShield})");
             yield return null;
         }
     }

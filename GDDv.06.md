@@ -295,70 +295,26 @@ Owner: Team of 3 (Design / Code / Art+Audio) | Engine: Unity | Status: **v0.6 (U
 
 ## 11) Boss Fight :
 
-อยู่ระหว่างการเลือก
-- Tempus Paradoxum (Shirogane Naoto) :
-    - Void Destruction / Magister + Aberrant / Illogic
-- The Singurlarity (Kiragasa Ren) :
-    - [Placeholder] / Aberrant / Nihil
-- Katastrophē Anthrōpou (Kirasagi Ryoma) :
-    - Imperator / Warlord / Illogic + Nihil
-- The Maestro (???) :
-    - [Placeholder] / Magister / Nihil
-- Kuroi Taiyō Lysendros (Lysendros Heliodor) :
-    - Solar Eater / Warlord / Logos + Nihil
+- Lysendros Heliodor | Kuroi Taiyō [黒い太陽] :
+    - Overthrone / Warlord / Logos + Nihil
 
 ---
 
 ## 12) ตัวละครที่เล่นได้ใน MVP
 
-### Main Character — User
-
-- **[???] ─ The Horizon**
-
 ### Playable Character — 3 char
 
-อยู่ระหว่างการเลือก
-
-### Chapter: Void’s Destruction
-
-- Shirogane Naoto ─ Humanity’s Paradox
+- Shirogane Naoto | Apeiron Fool
     - Class : Magister
     - Subclass : The Inquisitor
-    - Element : Logos
-- Tsukishiro Genma — Ozymandias
-    - Class : Warlord
-    - Subclass : Juggernaut
-    - Element : Logos
-- Kirasagi Ryoma ─ Katastrophē Anthrōpou
-    - Class : Warlord
-    - Subclass : Imperator
     - Element : Illogic
-
-### Chapter: Blacksun Chronicles
-
-- Lysendros Heliodor — The Sunbringer
-    - Class : Warlord
-    - Subclass : The Sentinel
-    - Element : Logos
-- Kuroi Taiyō Lysendros — Lysendros Heliodor{UTSURO}
+- Suzaku Homura | Apheryon Fate
     - Class : Warlord
     - Subclass : False Saviour
     - Element : Nihil
-- Silvia Slythene ─ Silver Edios
+- Kirishima Saeko | Apollrya:Eventide Queen
     - Class : Aberrant
-    - Subclass : Etherialist
-    - Element : Illogic
-- Lilith — Silvia Slythene{UTSURO}
-    - Class : Aberrant
-    - Subclass : The Veil Witch
-    - Element : Nihil + Illogic
-- Corvin Grayson — The Ebon Aegis
-    - Class : Warlord
-    - Subclass : Juggernaut
-    - Element : Logos
-- The Void Aegis — Corvin Grayson{UTSURO}
-    - Class : Warlord
-    - Subclass : Slasher
+    - Subclass : Void Reaver
     - Element : Nihil
 
 ---

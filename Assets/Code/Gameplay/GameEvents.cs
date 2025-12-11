@@ -1,6 +1,7 @@
 using UnityEngine;
-using Game.Gameplay; // For Unit reference
 using Game.Core; // For Enums (GameState, SanityState, FieldState)
+using System.Collections.Generic; // For List
+using Game.Gameplay.AI; // For BossIntent
 
 namespace Game.Gameplay
 {
@@ -60,6 +61,37 @@ namespace Game.Gameplay
         public UnitDiedEvent(Unit unit) { DeadUnit = unit; }
     }
 
+    public struct UnitSelectedEvent
+    {
+        public Unit SelectedUnit;
+        public UnitSelectedEvent(Unit unit) { SelectedUnit = unit; }
+    }
+
+    public struct BossPhaseChangedEvent
+    {
+        public Unit Boss;
+        public int NewPhaseIndex;
+        public int MaxPhases;
+        
+        public BossPhaseChangedEvent(Unit boss, int newPhase, int maxPhases)
+        {
+            Boss = boss;
+            NewPhaseIndex = newPhase;
+            MaxPhases = maxPhases;
+        }
+    }
+
+    public struct BossIntentDeclaredEvent
+    {
+        public Unit Boss;
+        public List<BossIntent> Intents;
+        public BossIntentDeclaredEvent(Unit boss, List<BossIntent> intents)
+        {
+            Boss = boss;
+            Intents = intents;
+        }
+    }
+
     // --- Stat / Resource Events ---
     public struct SanityChangedEvent
     {
@@ -85,6 +117,12 @@ namespace Game.Gameplay
         }
     }
 
+    public struct SanityZeroEvent
+    {
+        public Unit Target;
+        public SanityZeroEvent(Unit target) { Target = target; }
+    }
+
     // --- Field Events ---
     public struct FieldStateChangedEvent
     {
@@ -101,6 +139,38 @@ namespace Game.Gameplay
         {
             Target = target;
             Source = source;
+        }
+    }
+
+    // --- UI Events ---
+    public struct HandUpdatedEvent
+    {
+        public System.Collections.Generic.List<Game.Gameplay.Cards.Card> Hand;
+        public HandUpdatedEvent(System.Collections.Generic.List<Game.Gameplay.Cards.Card> hand)
+        {
+            Hand = hand;
+        }
+    }
+
+    public struct CardPlayedEvent
+    {
+        public Unit User;
+        public Game.Gameplay.Cards.Card Card;
+        public CardPlayedEvent(Unit user, Game.Gameplay.Cards.Card card)
+        {
+            User = user;
+            Card = card;
+        }
+    }
+
+    public struct CommandAddedEvent
+    {
+        public Unit Unit;
+        public ICommand Command;
+        public CommandAddedEvent(Unit unit, ICommand command)
+        {
+            Unit = unit;
+            Command = command;
         }
     }
 }

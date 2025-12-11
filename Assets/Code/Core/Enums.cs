@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Game.Core
 {
     public enum GameState
@@ -39,5 +41,13 @@ namespace Game.Core
         Logos,
         Illogic,
         None
+    }
+
+    public enum ActionType
+    {
+        Attack,
+        Defend,
+        Analyze,
+        Skill
     }
 }

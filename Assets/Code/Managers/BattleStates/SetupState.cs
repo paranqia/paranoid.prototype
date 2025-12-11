@@ -1,5 +1,8 @@
 using UnityEngine;
 using Game.Managers;
+using Game.Core; // For GameState enum
+using Game.Gameplay; // For GameEvents
+using Game.Gameplay.AI; // For BossAIController
 
 namespace Game.Managers.States
 {
@@ -10,14 +13,41 @@ namespace Game.Managers.States
         public override void Enter()
         {
             Debug.Log("Entering Setup State...");
+            EventBus.Publish(new GameStateChangedEvent(GameState.BattleStart)); // Or SetupPhase
+
+            // 1. Reset / Prepare Units
+            foreach (var unit in owner.Units)
+            {
+                // Clear old commands from previous turn
+                unit.ClearCommands();
+                
+                // Regenerate Sanity/Shields if needed?
+                // Trigger Start of Turn Effects
+            }
             
-            // 1. Setup Turn Order (via TurnManager? Or TimelineManager?)
-            // TimelineManager.Instance.Setup(owner.Units); // Hypothetical
+            // 2. Boss Logic Generation (AI thinks here)
+            foreach (var unit in owner.Units)
+            {
+                if (!unit.isPlayer)
+                {
+                    BossAIController ai = unit.GetComponent<BossAIController>();
+                    if (ai != null)
+                    {
+                        // Pass Player Party as targets
+                        ai.GenerateTurnActions(owner.PlayerParty);
+                        Debug.Log($"Generated AI actions for {unit.unitName}");
+                    }
+                }
+            }
             
-            // 2. Draw Cards (via DeckManager)
-            // DeckManager.Instance.DrawFullHand();
-            
-            // 3. Transition to Planning
+            // 3. Draw Cards
+            if (DeckManager.Instance != null)
+            {
+                // GDD: Draw until full (5)
+                DeckManager.Instance.DrawFullHand();
+            }
+
+            // 4. Transition to Player Turn
             owner.ChangeState(new PlayerTurnState(owner));
         }
     }
