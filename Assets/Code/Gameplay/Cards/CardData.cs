@@ -4,15 +4,6 @@ using Game.Core;
 
 namespace Game.Gameplay.Cards
 {
-    public enum CardType
-    {
-        Attack,
-        Skill,
-        Power,
-        Status,
-        Curse
-    }
-
     public enum TargetType
     {
         Self,
@@ -34,7 +25,7 @@ namespace Game.Gameplay.Cards
         [Header("Stats")]
         public int cost;
         public Element element;
-        public CardType cardType;
+        public Game.Core.CardType cardType; // Explicitly use Game.Core.CardType
         public TargetType targetType;
 
         [Header("Mechanics")]

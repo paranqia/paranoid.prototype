@@ -17,8 +17,11 @@ namespace Game.Managers
         public DeckManager deckManager;
         public List<Unit> Units = new List<Unit>(); // Public field for Inspector assignment
 
-        // Property to access the Player Unit specifically
+        // Property to access the Main Player Unit (Leader/First)
         public Unit PlayerUnit { get; private set; }
+        
+        // Property to access all Player Units (Party)
+        public List<Unit> PlayerParty { get; private set; } = new List<Unit>();
 
         private void Awake()
         {
@@ -26,7 +29,6 @@ namespace Game.Managers
             else Destroy(gameObject);
 
             // Auto-find units if empty (Safety fallback)
-            // Moved to Awake to ensure readiness for UI (Fixes Race Condition)
             if (Units.Count == 0)
             {
                 Units = FindObjectsByType<Unit>(FindObjectsSortMode.None).ToList();
@@ -39,12 +41,24 @@ namespace Game.Managers
                 if (deckManager == null) deckManager = FindAnyObjectByType<DeckManager>();
             }
 
-            // Identify Player Unit
-            PlayerUnit = Units.Find(u => u.isPlayer);
-            if (PlayerUnit == null && Units.Count > 0)
+            IdentifyUnits();
+        }
+
+        private void IdentifyUnits()
+        {
+            // Identify Player Party
+            PlayerParty = Units.Where(u => u.isPlayer).ToList();
+            
+            // Identify Main Player Unit (first one found)
+            if (PlayerParty.Count > 0)
+            {
+                PlayerUnit = PlayerParty[0];
+            }
+            else if (Units.Count > 0)
             {
                 // Fallback: Assume first unit is player if no flag set
                 PlayerUnit = Units[0];
+                PlayerParty.Add(PlayerUnit);
                 Debug.LogWarning($"BattleManager: No Unit marked as 'isPlayer'. Defaulting to {PlayerUnit.unitName}");
             }
         }
@@ -52,32 +66,25 @@ namespace Game.Managers
         public void SetUnits(List<Unit> units)
         {
             Units = units;
+            IdentifyUnits();
             
-            // Re-identify Player Unit
-            PlayerUnit = Units.Find(u => u.isPlayer);
-            if (PlayerUnit == null && Units.Count > 0)
+            // Re-Initialize Deck if needed
+            if (deckManager != null && PlayerParty.Count > 0)
             {
-                PlayerUnit = Units[0];
-                Debug.LogWarning($"BattleManager: No Unit marked as 'isPlayer'. Defaulting to {PlayerUnit.unitName}");
-            }
-            
-            // Re-Initialize Deck if needed (if Start() already ran could be tricky, but usually this is called before Start)
-            if (deckManager != null && PlayerUnit != null)
-            {
-                deckManager.InitializeDeck(PlayerUnit);
+                deckManager.InitializeDeck(PlayerParty);
             }
         }
 
         private void Start()
         {
-            // Initialize Deck
-            if (deckManager != null && PlayerUnit != null)
+            // Initialize Deck with Party
+            if (deckManager != null && PlayerParty.Count > 0)
             {
-                deckManager.InitializeDeck(PlayerUnit);
+                deckManager.InitializeDeck(PlayerParty);
             }
             else
             {
-                Debug.LogWarning("BattleManager: No PlayerUnit or DeckManager found!");
+                Debug.LogWarning("BattleManager: No PlayerParty or DeckManager found!");
             }
 
             // Start with Setup State
